@@ -20,7 +20,14 @@ static int createtable(int fs, uint16_t table[])
 static void writesource(const uint16_t table[], int len)
 {
     printf("#include <stdint.h>\n\n");
-    printf("static const uint16_t notestable[] {");
+    printf("static const uint16_t notestable[] {\n");
+
+    const char *notes[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    printf("/*");
+    for (int i = 0; i < 12; i++) {
+        printf("%7s", notes[i]);
+    }
+    printf(" */");
 
     for (int i = 0; i < len; i++) {
         if ((i % 12) == 0) {
