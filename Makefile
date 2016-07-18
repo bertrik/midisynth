@@ -3,8 +3,8 @@ LDFLAGS = -lm
 
 all: notestable.c
 
-notestable.c: gennotes
-	./gennotes >$@
+notestable.c: gennotes Makefile
+	./gennotes 32000 >$@
 
 gennotes: gennotes.c
 

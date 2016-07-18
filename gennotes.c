@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <math.h>
 
@@ -49,7 +50,13 @@ int main(int argc, char *argv[])
     (void)argc;
     (void)argv;
 
-    int len = createtable(32000, table);
+    if (argc != 2) {
+        fprintf(stderr, "Usage: gennotes <samplerate>\n");
+        return -1;
+    }
+
+    int fs = atoi(argv[1]);
+    int len = createtable(fs, table);
     writesource(table, len);
 
     return 0;
