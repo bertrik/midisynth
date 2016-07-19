@@ -3,15 +3,14 @@
 
 // local state
 static uint8_t status;
-static uint8_t running_status = 0;
-static uint8_t len;
+static int len;
 static uint8_t idx;
 static uint8_t data[2];
 
 // determines the length of following data from status byte
-static void get_len(uint8_t b)
+static int get_len(uint8_t b)
 {
-    top = b & 0xF0;
+    int top = b & 0xF0;
     switch (top) {
     case 0x80:  return 2;
     case 0x90:  return 2;
