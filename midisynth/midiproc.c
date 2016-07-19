@@ -72,11 +72,12 @@ void midi_proc(uint8_t b)
             // non real-time
             idx = 0;
             len = get_len(b);
+            status = b;
             if (len == 0) {
                 // no data, process immediately
-                process_msg(b, data, 0);
+                process_msg(status, data, len);
+                status = next_status(status);
             }
-            status = next_status(b);
         }
         return;
     }
