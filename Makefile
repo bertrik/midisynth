@@ -12,3 +12,8 @@ clean:
 	rm -f gennotes
 	rm -f notestable.c
 
+test:
+	$(CC) $(CFLAGS) $(LDFLAGS) testmsg.c midisynth/midiproc.c -o testmsg
+	./testmsg
+
+

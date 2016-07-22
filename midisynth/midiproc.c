@@ -1,11 +1,21 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
+
+#include "midiproc.h"
 
 // local state
+static midi_msg_handle_fn_t *msg_handle_fn;
 static uint8_t status;
 static int len;
 static uint8_t idx;
 static uint8_t data[2];
+
+// initializes this module, installs a callback for reception of a full midi message
+void midi_msg_init(midi_msg_handle_fn_t *fn)
+{
+    msg_handle_fn = fn;
+}
 
 // determines the length of following data from status byte
 static int get_len(uint8_t b)
@@ -49,16 +59,8 @@ static bool is_realtime(uint8_t b)
     return (b >= 0xF8);
 }
 
-// process a fully received MIDI message
-static void process_msg(uint8_t status, uint8_t data[], uint8_t len)
-{
-    (void)status;
-    (void)data;
-    (void)len;
-}
-
 // processes an incoming byte in the midi state machine
-void midi_proc(uint8_t b)
+void midi_msg_proc(uint8_t b)
 {
     bool is_status = ((b & 0x80) != 0);
 
@@ -66,7 +68,7 @@ void midi_proc(uint8_t b)
     if (is_status)  {
         if (is_realtime(b)) {
             // real-time, no data, process immediately
-            process_msg(b, data, 0);
+            msg_handle_fn(b, NULL, 0);
         } else {
             // non real-time
             idx = 0;
@@ -74,7 +76,7 @@ void midi_proc(uint8_t b)
             status = b;
             if (len == 0) {
                 // no data, process immediately
-                process_msg(status, data, len);
+                msg_handle_fn(status, NULL, len);
                 status = next_status(status);
             }
         }
@@ -89,7 +91,7 @@ void midi_proc(uint8_t b)
             if (idx == len) {
                 idx = 0;
                 // process it
-                process_msg(status, data, len);
+                msg_handle_fn(status, data, len);
                 // prepare for next message
                 status = next_status(status);
             }
@@ -100,3 +102,5 @@ void midi_proc(uint8_t b)
         // unexpected data, ignore it
     }
 }
+
+
